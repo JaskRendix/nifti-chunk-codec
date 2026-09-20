@@ -1,0 +1,17 @@
+# Rust build output
+target/
+
+# Editor noise
+*.log
+
+# Medical imaging data
+*.nii
+*.nii.gz
+
+# Binary artifacts
+*.pyd
+*.dll
+
+# Build folders (legacy)
+build/
+vcpkg/

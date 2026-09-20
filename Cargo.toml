@@ -1,0 +1,27 @@
+[package]
+name = "nifti-chunk-codec-rs"
+version = "0.1.0"
+edition = "2024"
+license = "BSD-3-Clause"
+
+[dependencies]
+nifti = "0.18"
+zstd = "0.14"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+byteorder = "1.5"
+anyhow = "1.0"
+clap = { version = "4.5", features = ["derive"] }
+ndarray = "0.17.2"
+rand = "0.10.2"
+
+[dev-dependencies]
+criterion = "0.8"
+
+[[bin]]
+name = "mri"
+path = "src/bin/mri.rs"
+
+[[bench]]
+name = "mri_bench"
+harness = false
