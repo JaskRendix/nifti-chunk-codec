@@ -117,7 +117,7 @@ pub fn decode_mri(input_path: &str, output_path: &str) -> Result<()> {
     let mut f = File::open(input_path)?;
 
     // MAGIC
-    let mut magic = [0u8; 4];
+    let mut magic = [0u8; 3];
     f.read_exact(&mut magic)?;
     if magic[..] != MAGIC[..] {
         return Err(anyhow!("Not a MRI file"));

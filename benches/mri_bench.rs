@@ -47,7 +47,7 @@ fn bench_pipeline_throughput(c: &mut Criterion) {
     });
 
     // Pre-encode once to isolate decoding benchmark performance
-    let _ = encode_mri(
+    encode_mri(
         input_path,
         mri_path,
         12,
@@ -56,7 +56,8 @@ fn bench_pipeline_throughput(c: &mut Criterion) {
         200,
         3,
         1,
-    );
+    )
+    .expect("Failed to pre-encode MRI file for decoding benchmark");
 
     group.bench_function("decode_12bit", |b| {
         b.iter(|| {
