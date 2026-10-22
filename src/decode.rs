@@ -292,3 +292,82 @@ pub fn decode_mri_to_vec(input_path: &str) -> Result<Vec<f32>> {
     let (vol, _, _) = load_result?;
     Ok(vol)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_ceil_div_exact() {
+        assert_eq!(ceil_div(16, 4), 4);
+        assert_eq!(ceil_div(8, 2), 4);
+    }
+
+    #[test]
+    fn test_ceil_div_round_up() {
+        assert_eq!(ceil_div(17, 4), 5);
+        assert_eq!(ceil_div(9, 2), 5);
+    }
+
+    #[test]
+    fn test_ceil_div_small_values() {
+        assert_eq!(ceil_div(1, 4), 1);
+        assert_eq!(ceil_div(4, 4), 1);
+        assert_eq!(ceil_div(5, 4), 2);
+    }
+
+    #[test]
+    fn test_write_chunk_into_volume_u8() {
+        let mut vol = vec![0.0f32; 8];
+
+        write_chunk_into_volume(
+            &mut vol,
+            [2, 2, 2],
+            [0, 0, 0],
+            [2, 2, 2],
+            &[1, 2, 3, 4, 5, 6, 7, 8],
+            false,
+        );
+
+        assert_eq!(vol, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
+    }
+
+    #[test]
+    fn test_write_chunk_into_volume_u16() {
+        let mut vol = vec![0.0f32; 2];
+
+        let chunk = [
+            0x34, 0x12, // 0x1234
+            0x78, 0x56, // 0x5678
+        ];
+
+        write_chunk_into_volume(&mut vol, [1, 1, 2], [0, 0, 0], [1, 1, 2], &chunk, true);
+
+        assert_eq!(vol[0], 0x1234 as f32);
+        assert_eq!(vol[1], 0x5678 as f32);
+    }
+
+    #[test]
+    fn test_write_chunk_partial_region() {
+        let mut vol = vec![0.0f32; 27];
+
+        write_chunk_into_volume(&mut vol, [3, 3, 3], [1, 1, 1], [1, 1, 1], &[42], false);
+
+        let idx = 3 * 3 + 3 + 1;
+
+        assert_eq!(vol[idx], 42.0);
+
+        let touched = vol.iter().filter(|&&v| v != 0.0).count();
+        assert_eq!(touched, 1);
+    }
+
+    #[test]
+    fn test_write_chunk_offset_position() {
+        let mut vol = vec![0.0f32; 8];
+
+        write_chunk_into_volume(&mut vol, [2, 2, 2], [1, 0, 0], [1, 1, 1], &[99], false);
+
+        let idx = 2 * 2;
+        assert_eq!(vol[idx], 99.0);
+    }
+}

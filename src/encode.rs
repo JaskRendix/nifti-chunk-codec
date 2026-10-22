@@ -219,3 +219,56 @@ fn percentile(data: &[f32], pct: f32) -> f32 {
     let idx = ((pct / 100.0) * (v.len() as f32)) as usize;
     v[idx.min(v.len() - 1)]
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_chunk_as_bytes() {
+        let chunk = vec![0x1234u16, 0x5678u16];
+
+        let bytes = chunk_as_bytes(&chunk);
+
+        assert_eq!(bytes, vec![0x34, 0x12, 0x78, 0x56,]);
+    }
+
+    #[test]
+    fn test_chunk_as_bytes_empty() {
+        let chunk: Vec<u16> = Vec::new();
+
+        let bytes = chunk_as_bytes(&chunk);
+
+        assert!(bytes.is_empty());
+    }
+
+    #[test]
+    fn test_extract_chunk_full_volume() {
+        let raw: Vec<u16> = (0..8).collect();
+
+        let chunk = extract_chunk(&raw, [2, 2, 2], [0, 0, 0], [2, 2, 2]);
+
+        assert_eq!(chunk, raw);
+    }
+
+    #[test]
+    fn test_extract_chunk_single_voxel() {
+        let raw: Vec<u16> = (0..27).collect();
+
+        let chunk = extract_chunk(&raw, [3, 3, 3], [1, 1, 1], [2, 2, 2]);
+
+        let expected_idx = 3 * 3 + 3 + 1;
+        assert_eq!(chunk, vec![expected_idx as u16]);
+    }
+
+    #[test]
+    fn test_extract_chunk_subregion() {
+        let raw: Vec<u16> = (0..27).collect();
+
+        let chunk = extract_chunk(&raw, [3, 3, 3], [0, 0, 0], [2, 2, 2]);
+
+        assert_eq!(chunk.len(), 8);
+
+        assert_eq!(chunk, vec![0, 1, 3, 4, 9, 10, 12, 13,]);
+    }
+}
