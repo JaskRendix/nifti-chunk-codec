@@ -87,7 +87,7 @@ mod tests {
 
         save_nifti_volume(&volume, [2, 2, 2], path.to_str().unwrap()).unwrap();
 
-        let (loaded, dims, voxel_size) = load_nifti_volume(path.to_str().unwrap()).unwrap();
+        let (loaded, dims, _voxel_size) = load_nifti_volume(path.to_str().unwrap()).unwrap();
 
         assert_eq!(dims, [2, 2, 2]);
         assert_eq!(loaded.len(), volume.len());
