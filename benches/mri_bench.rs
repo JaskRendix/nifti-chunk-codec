@@ -30,6 +30,7 @@ fn bench_pipeline_throughput(c: &mut Criterion) {
 
     let mut group = c.benchmark_group("MRI Pipeline Throughput");
     group.warm_up_time(Duration::from_secs(1));
+    group.measurement_time(Duration::from_secs(15));
     group.sample_size(20);
     group.throughput(Throughput::Bytes(file_bytes));
 
@@ -90,6 +91,7 @@ fn bench_real_datasets(c: &mut Criterion) {
     let out_path = format!("bench_{}.mri", dataset.replace(['/', '.'], "_"));
 
     let mut group = c.benchmark_group("Real Dataset Encodings");
+    group.measurement_time(Duration::from_secs(15));
     group.sample_size(20);
 
     group.bench_function(&bench_name, |b| {
